@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_04_133334) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_04_164334) do
   create_table "invoices", force: :cascade do |t|
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
@@ -26,6 +26,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_04_133334) do
     t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "subscription_id"
   end
 
   create_table "subscriptions", force: :cascade do |t|
