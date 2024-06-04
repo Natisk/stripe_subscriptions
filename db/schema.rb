@@ -10,7 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_03_185958) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_04_133334) do
+  create_table "invoices", force: :cascade do |t|
+    t.string "stripe_customer_id"
+    t.string "stripe_subscription_id"
+    t.string "account_country"
+    t.decimal "amount_due"
+    t.decimal "amount_paid"
+    t.decimal "amount_remaining"
+    t.decimal "amount_shipping"
+    t.string "billing"
+    t.string "charge"
+    t.string "currency"
+    t.boolean "paid", default: false
+    t.integer "status", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Stripe::WebhooksController < ApplicationController
-  protect_from_forgery except: %i[create], prepend: true
+  skip_forgery_protection
 
   def create
     endpoint_secret = Rails.application.credentials.stripe[:endpoint_secret]
@@ -25,12 +25,14 @@ class Stripe::WebhooksController < ApplicationController
 
     # Handle the event
     case event.type
-    when 'customer.subscription.created'
+    # when 'customer.subscription.created'
       # debugger
-      Stripe::CreateSubscriptionService.call(event.data.object)
+      # Stripe::CreateSubscriptionService.call(event.data.object)
     when 'customer.subscription.deleted'
       p '--- subscription canceled ---'
     when 'invoice.paid'
+      debugger
+      # Stripe::CreateInvoiceService.call(event.data.object)
       p '--- subscription paid ---'
     else
       puts "--------------- Unhandled event type: #{event.type} ---------------------"
