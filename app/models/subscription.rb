@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
 class Subscription < ApplicationRecord
-  enum state: i%(unpaid paid canceled)
+  # default state is :unpaid
+  enum state: %i[unpaid paid canceled]
 end
