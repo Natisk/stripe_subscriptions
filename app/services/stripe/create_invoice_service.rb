@@ -24,5 +24,7 @@ class Stripe::CreateInvoiceService < BaseService
       paid: stripe_invoice.paid,
       status: stripe_invoice.status
     )
+
+    subscription.pay!
   end
 end
