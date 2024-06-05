@@ -8,7 +8,7 @@ class Stripe::EventsHandlerService < BaseService
   def call
     case event.type
     when 'customer.subscription.created'
-      Stripe::CreateSubscriptionService.call(event.data.object)
+      CreateSubscriptionService.call(event.data.object, :stripe)
     when 'customer.subscription.deleted'
       Stripe::CancelSubscriptionService.call(event.data.object)
     when 'invoice.paid'
