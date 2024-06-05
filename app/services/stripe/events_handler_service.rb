@@ -12,7 +12,7 @@ class Stripe::EventsHandlerService < BaseService
     when 'customer.subscription.deleted'
       CancelSubscriptionService.call(event.data.object, :stripe)
     when 'invoice.paid'
-      Stripe::CreateInvoiceService.call(event.data.object)
+      CreateInvoiceService.call(event.data.object, :stripe)
     else
       puts "---- Unhandled event type: #{event.type} ----"
     end
