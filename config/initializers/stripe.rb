@@ -1,1 +1,3 @@
-Stripe.api_key = Rails.application.credentials.stripe[:api_key]
+# frozen_string_literal: true
+
+Stripe.api_key = Rails.env.test? ? '' : Rails.application.credentials.stripe[:api_key]
