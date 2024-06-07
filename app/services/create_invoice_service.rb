@@ -9,7 +9,7 @@ class CreateInvoiceService < BaseService
   def call
     mapped_params = case data_origin
                     when :stripe
-                      StripeInvoiceMapper.new(invoice_params).call
+                      Stripe::InvoiceMapper.new(invoice_params).call
                     end
 
     subscription = Subscription.find_by!(params_to_find)

@@ -9,7 +9,7 @@ class CreateSubscriptionService < BaseService
   def call
     mapped_params = case data_origin
                     when :stripe
-                      StripeSubscriptionMapper.new(subscription_params).call
+                      Stripe::SubscriptionMapper.new(subscription_params).call
                     end
 
     Subscription.create!(mapped_params)

@@ -8,6 +8,7 @@ class CancelSubscriptionService < BaseService
 
   def call
     subscription = Subscription.find_by!(params_to_find)
+    # guarded in model by aasm
     subscription.cancel!
   end
 

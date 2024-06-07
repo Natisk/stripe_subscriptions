@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class StripeSubscriptionMapper
+class Stripe::SubscriptionMapper
   def initialize(subcription_params)
     @subcription_params = subcription_params
   end

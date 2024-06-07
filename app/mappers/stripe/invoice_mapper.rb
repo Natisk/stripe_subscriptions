@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class StripeInvoiceMapper
+class Stripe::InvoiceMapper
   def initialize(invoice_params)
     @invoice_params = invoice_params
   end
