@@ -9,6 +9,8 @@ Rails.application.routes.draw do
 
   post 'stripe/webhooks', to: 'stripe/webhooks#create'
 
+  resources :subscriptions, only: %i[index]
+
   # Defines the root path route ("/")
-  # root "posts#index"
+  root 'subscriptions#index'
 end
