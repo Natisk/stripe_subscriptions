@@ -17,9 +17,9 @@ RSpec.describe 'Subscriptions', type: :request do
       expect(response).to render_template(:index)
     end
 
-    it 'assigns all subscriptions to @subscriptions' do
+    it 'assigns all subscriptions to @subscriptions and orders them' do
       get subscriptions_path
-      expect(assigns(:subscriptions)).to match_array([subscription1, subscription2])
+      expect(assigns(:subscriptions)).to eq([subscription2, subscription1])
     end
   end
 end

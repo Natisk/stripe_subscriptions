@@ -2,6 +2,6 @@
 
 class SubscriptionsController < ApplicationController
   def index
-    @subscriptions = Subscription.all
+    @subscriptions = Subscription.order(created_at: :desc).limit(20)
   end
 end
