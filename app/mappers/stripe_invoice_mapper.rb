@@ -14,7 +14,6 @@ class StripeInvoiceMapper
       amount_paid: invoice_params.amount_paid,
       amount_remaining: invoice_params.amount_remaining,
       amount_shipping: invoice_params.amount_shipping,
-      billing: invoice_params.billing,
       charge: invoice_params.charge,
       currency: invoice_params.currency,
       paid: invoice_params.paid,
