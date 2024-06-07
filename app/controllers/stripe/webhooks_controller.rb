@@ -4,7 +4,7 @@ class Stripe::WebhooksController < ApplicationController
   skip_forgery_protection
 
   def create
-    endpoint_secret = Rails.application.credentials.stripe[:endpoint_secret]
+    endpoint_secret = ENV['STRIPE_WEBHOOK_SECRET']
     payload = request.body.read
     sig_header = request.env['HTTP_STRIPE_SIGNATURE']
     event = nil

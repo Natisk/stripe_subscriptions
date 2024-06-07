@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-if Rails.application.credentials.stripe
-  Stripe.api_key = Rails.env.test? ? '' : Rails.application.credentials.stripe[:api_key]
+if ENV['STRIPE_API_KEY']
+  Stripe.api_key = Rails.env.production? ? '' : ENV['STRIPE_API_KEY']
 end

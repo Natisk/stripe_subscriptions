@@ -10,6 +10,7 @@
 # Ignore all environment files (except templates).
 /.env*
 !/.env*.erb
+!/.env.example
 
 # Ignore all logfiles and tempfiles.
 /log/*
@@ -37,6 +38,4 @@
 /config/credentials/development.key
 
 # Ignore sqlite3 files
-/db/*.sqlite3
-/db/*.sqlite3-shm
-/db/*.sqlite3-wal
+/db/*.sqlite3*

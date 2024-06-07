@@ -11,6 +11,8 @@ services:
     environment:    
       - RAILS_ENV=development
       - DATABASE_URL=sqlite3:db/development.sqlite3
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
     depends_on:
       - stripe
 
@@ -30,6 +32,8 @@ services:
     environment:
       - DATABASE_URL=sqlite3:db/test.sqlite3
       - RAILS_ENV=test
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
 
 volumes:
   db-data:
