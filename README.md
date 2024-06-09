@@ -30,14 +30,14 @@ Before you begin, ensure you have the following installed on your machine:
 
 8. Run
    ```bash
-   docker compose run stripe
+   docker compose run --rm stripe
 
 9. Stripe CLI will provide you a link for authentication.
 10.  Follow the link and confirm authentication on stripe web site.
 
 11. Run again
     ```bash
-    docker compose run stripe
+    docker compose run --rm stripe
 
 12. Now Stripe CLI will give you webhook secret, paste it to `.env`
 13. Stop that container and Run
