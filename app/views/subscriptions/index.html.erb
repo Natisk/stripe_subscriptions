@@ -28,7 +28,7 @@
             <%= subscription.state %>
           </td>
           <td class="border border-slate-700 whitespace-nowrap text-sm font-medium px-2 py-4">
-            <%= subscription.created_at.strftime('%B %e, %Y, %l:%M %p') %>
+            <%= subscription.created_at.in_time_zone(Time.zone).strftime('%B %e, %Y, %l:%M %p') %>
           </td>        
         </tr>
       <% end %>
