@@ -1,1 +1,39 @@
-Hello Subscriptions
+
+
+<h1 class="text-3xl font-bold mb-2 underline">Subscriptions</h1>
+
+  <table class="table-auto w-full shadow-md mt-5 rounded border-separate min-w-full divide-y divide-gray-200">
+    <thead>
+      <tr>
+        <th class="border border-slate-600 px-2 py-4 font-black-600 bg-gray-200">ID</th>
+        <th class="border border-slate-600 px-2 py-4 font-black-600 bg-gray-200">Stripe Customer ID</th>
+        <th class="border border-slate-600 px-2 py-4 font-black-600 bg-gray-200">Stripe Subscription ID</th>
+        <th class="border border-slate-600 px-2 py-4 font-black-600 bg-gray-200">State</th>
+        <th class="border border-slate-600 px-2 py-4 font-black-600 bg-gray-200">Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @subscriptions.each do |subscription| %>
+        <tr class="bg-card text-gray-500">
+          <td class="border border-slate-700 whitespace-nowrap text-sm font-medium px-2 py-4">
+            <%= subscription.id %>
+          </td>
+          <td class="border border-slate-700 whitespace-nowrap text-sm font-medium px-2 py-4">
+            <%= subscription.stripe_customer_id %>
+          </td>
+          <td class="border border-slate-700 whitespace-nowrap text-sm font-medium px-2 py-4">
+            <%= subscription.stripe_subscription_id %>
+          </td>
+          <td class="border border-slate-700 whitespace-nowrap text-sm font-medium px-2 py-4">
+            <%= subscription.state %>
+          </td>
+          <td class="border border-slate-700 whitespace-nowrap text-sm font-medium px-2 py-4">
+            <%= subscription.created_at.strftime('%B %e, %Y, %l:%M %p') %>
+          </td>        
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+
+

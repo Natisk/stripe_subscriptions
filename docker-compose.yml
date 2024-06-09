@@ -6,6 +6,7 @@ services:
     container_name: rails_app
     volumes:
       - '.:/rails'
+      - 'db-data:/rails/db'
     ports:
       - '3000:3000'
     environment:    
@@ -16,6 +17,17 @@ services:
     depends_on:
       - stripe
 
+  css:
+    build: .
+    command: bin/rails tailwindcss:watch
+    container_name: css_watcher
+    volumes:
+      - .:/app
+    depends_on:
+      - app
+    stdin_open: true
+    tty: true
+  
   stripe:
     image: stripe/stripe-cli
     command: listen --forward-to http://app:3000/stripe/webhooks

@@ -1,0 +1,10 @@
+{  
+  "name": "stripe_subscriptions",
+  "private": true,
+  "dependencies": {    
+    "tailwindcss": "^3.0.0"
+  },
+  "scripts": {
+    "tailwindcss:watch": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --watch"
+  }
+}

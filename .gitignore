@@ -39,3 +39,6 @@
 
 # Ignore sqlite3 files
 /db/*.sqlite3*
+
+/app/assets/builds/*
+!/app/assets/builds/.keep
