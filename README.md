@@ -44,7 +44,7 @@ Before you begin, ensure you have the following installed on your machine:
     ```bash
     docker compose up
 
-14. Now you can crate Subscriptions on Stripe web interface or open new terminal tab and run
+14. Now you can create Subscriptions on Stripe web interface or open new terminal tab and run
     ```bash
     docker compose run --rm stripe trigger customer.subscription.created
 
