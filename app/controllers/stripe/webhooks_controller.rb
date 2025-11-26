@@ -4,27 +4,31 @@ class Stripe::WebhooksController < ApplicationController
   skip_forgery_protection
 
   def create
-    endpoint_secret = ENV['STRIPE_WEBHOOK_SECRET']
-    payload = request.body.read
-    sig_header = request.env['HTTP_STRIPE_SIGNATURE']
-    event = nil
-
-    begin
-      event = Stripe::Webhook.construct_event(
-        payload, sig_header, endpoint_secret
-      )
-    rescue JSON::ParserError => e
-      # Invalid payload
-      render json: { error: e.message }, status: :bad_request
-      return
-    rescue Stripe::SignatureVerificationError => e
-      # Invalid signature
-      render json: { error: e.message }, status: :bad_request
-      return
-    end
+    event = verify_stripe_signature
+    return unless event
 
     Stripe::EventsHandlerService.call(event)
 
-    head 200
+    head :ok
+  end
+
+  private
+
+  def verify_stripe_signature
+    endpoint_secret = ENV['STRIPE_WEBHOOK_SECRET']
+    return render(json: { error: 'Missing webhook secret' }, status: :bad_request) if endpoint_secret.blank?
+
+    payload = request.raw_post
+    sig_header = request.env['HTTP_STRIPE_SIGNATURE']
+
+    Stripe::Webhook.construct_event(payload, sig_header, endpoint_secret)
+  rescue JSON::ParserError => e
+    Rails.logger.error("Stripe webhook JSON parse error: #{e.message}")
+    render json: { error: e.message }, status: :bad_request
+    nil
+  rescue Stripe::SignatureVerificationError => e
+    Rails.logger.error("Stripe webhook signature error: #{e.message}")
+    render json: { error: e.message }, status: :bad_request
+    nil
   end
 end
