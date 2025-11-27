@@ -1,39 +1,50 @@
 # frozen_string_literal: true
 
-class Stripe::EventsHandlerService < BaseService
-  def initialize(event)
-    @event = event
-  end
+module Stripe
+  # Handles Stripe events
+  class EventsHandlerService < BaseService
+    def initialize(event) # rubocop:disable Lint/MissingSuper
+      @event = event
+    end
 
-  def call
-    case event.type
+    def call
+      case event.type
 
-    when 'customer.subscription.created'
-      handle_subscribtion_created
+      when 'customer.subscription.created'
+        handle_subscribtion_created
 
-    when 'customer.subscription.deleted'
-      CancelSubscriptionService.call(event.data.object, :stripe)
+      when 'customer.subscription.deleted'
+        handle_subscription_deleted
 
-    when 'invoice.paid'
-      CreateInvoiceService.call(event.data.object, :stripe)
+      when 'invoice.paid'
+        CreateInvoiceService.call(event.data.object, :stripe)
 
-    else
-      # Helpful for debugging unexpected or newly introduced Stripe events.
-      Rails.logger.info "Unhandled Stripe event type: #{event.type}"
+      else
+        # Helpful for debugging unexpected or newly introduced Stripe events.
+        Rails.logger.info "Unhandled Stripe event type: #{event.type}"
+      end
+    end
+
+    private
+
+    attr_reader :event
+
+    def handle_subscribtion_created
+      mapped = Stripe::SubscriptionMapper.new(event.data.object).call
+      CreateSubscriptionService.call(mapped)
+    rescue => e # rubocop:disable Style/RescueStandardError
+      Rails.logger.error("Failed to handle subscribtion created #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      raise
+    end
+
+    def handle_subscription_deleted
+      subscription_id = event.data.object.id
+      CancelSubscriptionService.call(subscription_id)
+    rescue => e # rubocop:disable Style/RescueStandardError
+      Rails.logger.error("Failed to handle sybscription delete #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      raise
     end
   end
-
-  private
-
-  attr_reader :event
-
-  def handle_subscribtion_created
-    mapped = Stripe::SubscriptionMapper.new(event.data.object).call
-    CreateSubscriptionService.call(mapped)
-  rescue => e
-    Rails.logger.error("Failed to handle subscribtion created #{e.message}")
-    Rails.logger.error(e.backtrace.join("\n"))
-    raise
-  end
-
 end
