@@ -12,13 +12,10 @@ module Stripe
 
       when 'customer.subscription.created'
         handle_subscribtion_created
-
       when 'customer.subscription.deleted'
         handle_subscription_deleted
-
       when 'invoice.paid'
-        CreateInvoiceService.call(event.data.object, :stripe)
-
+        handle_invoice_paid
       else
         # Helpful for debugging unexpected or newly introduced Stripe events.
         Rails.logger.info "Unhandled Stripe event type: #{event.type}"
@@ -42,7 +39,16 @@ module Stripe
       subscription_id = event.data.object.id
       CancelSubscriptionService.call(subscription_id)
     rescue => e # rubocop:disable Style/RescueStandardError
-      Rails.logger.error("Failed to handle sybscription delete #{e.message}")
+      Rails.logger.error("Failed to handle subscription deleted #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      raise
+    end
+
+    def handle_invoice_paid
+      mapped = Stripe::InvoiceMapper.new(event.data.object).call
+      CreateInvoiceService.call(mapped)
+    rescue => e # rubocop:disable Style/RescueStandardError
+      Rails.logger.error("Failed to handle invoice paid #{e.message}")
       Rails.logger.error(e.backtrace.join("\n"))
       raise
     end
