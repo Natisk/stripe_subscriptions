@@ -7,18 +7,33 @@ class Stripe::EventsHandlerService < BaseService
 
   def call
     case event.type
+
     when 'customer.subscription.created'
-      CreateSubscriptionService.call(event.data.object, :stripe)
+      handle_subscribtion_created
+
     when 'customer.subscription.deleted'
       CancelSubscriptionService.call(event.data.object, :stripe)
+
     when 'invoice.paid'
       CreateInvoiceService.call(event.data.object, :stripe)
+
     else
-      puts "---- Unhandled event type: #{event.type} ----"
+      # Helpful for debugging unexpected or newly introduced Stripe events.
+      Rails.logger.info "Unhandled Stripe event type: #{event.type}"
     end
   end
 
   private
 
   attr_reader :event
+
+  def handle_subscribtion_created
+    mapped = Stripe::SubscriptionMapper.new(event.data.object).call
+    CreateSubscriptionService.call(mapped)
+  rescue => e
+    Rails.logger.error("Failed to handle subscribtion created #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    raise
+  end
+
 end
