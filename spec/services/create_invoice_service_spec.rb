@@ -4,44 +4,58 @@ require 'rails_helper'
 
 RSpec.describe CreateInvoiceService do
   describe '#call' do
-    let(:invoice_params) { double("InvoiceParams", subscription: 'sub_123') }    
-    let(:subscription) { instance_double(Subscription, id: 1, stripe_subscription_id: 'sub_123') }
-    let(:mapped_params) { { amount: 1000, currency: 'usd' } }
-    let(:invoice) { instance_double(Invoice) }
+    let(:subscription) { instance_double('Subscription') }
+    let(:invoice) { instance_double('Invoice') }
 
-    context 'stripe origin' do
-      let(:data_origin) { :stripe }
-      let(:stripe_invoice_mapper) { instance_double(Stripe::InvoiceMapper, call: mapped_params) }
+    let(:mapped_params) do
+      {
+        external_id: 'sub_123',
+        customer_id: 'cus_123',
+        amount_paid: 1000,
+        currency: 'usd'
+      }
+    end
 
-      subject { described_class.new(invoice_params, data_origin) }
+    subject { described_class.new(mapped_params) }
 
+    before do
+      allow(Subscription).to receive(:find_by!)
+        .with(external_id: mapped_params[:external_id],
+              customer_id: mapped_params[:customer_id])
+        .and_return(subscription)
+
+      invoices_double = double('invoices')
+      allow(subscription).to receive(:invoices).and_return(invoices_double)
+      allow(invoices_double).to receive(:create!).with(mapped_params).and_return(invoice)
+
+      allow(subscription).to receive(:pay!)
+    end
+
+    it 'finds the subscription by external_id and customer_id' do
+      subject.call
+      expect(Subscription).to have_received(:find_by!).with(
+        external_id: mapped_params[:external_id],
+        customer_id: mapped_params[:customer_id]
+      )
+    end
+
+    it 'creates a new invoice associated with the subscription' do
+      subject.call
+      expect(subscription.invoices).to have_received(:create!).with(mapped_params)
+    end
+
+    it 'calls pay! on the subscription' do
+      subject.call
+      expect(subscription).to have_received(:pay!)
+    end
+
+    context 'when subscription does not exist' do
       before do
-        allow(Stripe::InvoiceMapper).to receive(:new).with(invoice_params).and_return(stripe_invoice_mapper)
-        allow(Subscription).to receive(:find_by!).with({ stripe_subscription_id: 'sub_123' })
-                                                 .and_return(subscription)
-        allow(subscription).to receive(:invoices).and_return(double(create!: invoice))
-        allow(subscription).to receive(:pay!)
+        allow(Subscription).to receive(:find_by!).and_raise(ActiveRecord::RecordNotFound)
       end
 
-      it 'calls stripe_incvoice_mapper' do
-        expect(stripe_invoice_mapper).to receive(:call)
-        subject.call
-      end
-
-      it 'finds the subscription' do
-        expect(Subscription).to receive(:find_by!).with({ stripe_subscription_id: 'sub_123' })
-                                                  .and_return(subscription)
-        subject.call
-      end
-
-      it 'calls create an invoice for the subscription' do
-        expect(subscription.invoices).to receive(:create!).with(mapped_params)
-        subject.call
-      end
-
-      it 'calls pay! on the subscription' do
-        expect(subscription).to receive(:pay!)
-        subject.call
+      it 'raises ActiveRecord::RecordNotFound' do
+        expect { subject.call }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end

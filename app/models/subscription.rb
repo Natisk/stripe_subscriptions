@@ -5,6 +5,9 @@ class Subscription < ApplicationRecord
 
   has_many :invoices
 
+  validates :customer_id, presence: true, uniqueness: true
+  validates :external_id, presence: true, uniqueness: true
+
   aasm column: :state, requires_lock: true, whiny_transitions: false do
     state :unpaid, initial: true
     state :paid, :canceled

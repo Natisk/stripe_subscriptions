@@ -10,10 +10,10 @@ class CreateInvoiceService < BaseService
     # Locate the corresponding Subscription in the system using values from the webhook.
     # Raises ActiveRecord::RecordNotFound if the subscription does not exist,
     # which will trigger a retry from Stripe.
-    subscription = Subscription.find_by!(stripe_subscription_id: mapped_params[:subscription_id])
+    subscription = Subscription.find_by!(external_id: mapped_params[:external_id],
+                                         customer_id: mapped_params[:customer_id])
 
     # Creates a new Invoice associated with the subscription.
-    # The bang (!) ensures validation errors are not swallowed.
     subscription.invoices.create!(mapped_params)
 
     # Trigger subscription state transition (handled by AASM in the Subscription model).

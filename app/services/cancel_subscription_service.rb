@@ -7,7 +7,7 @@ class CancelSubscriptionService < BaseService
   end
 
   def call
-    subscription = Subscription.find_by!(stripe_subscription_id: subscription_id)
+    subscription = Subscription.find_by!(external_id: subscription_id)
     # AASM handles state transitions
     subscription.cancel!
   end
