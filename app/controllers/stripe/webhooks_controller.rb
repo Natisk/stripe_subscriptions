@@ -6,7 +6,7 @@ module Stripe
     skip_forgery_protection
 
     def create
-      event = Stripe::VerifyWebhoodSignatureService.call(request)
+      event = Stripe::VerifyWebhookSignatureService.call(request)
       return head :bad_request unless event
 
       Stripe::ProcessWebhookEventService.call(event)

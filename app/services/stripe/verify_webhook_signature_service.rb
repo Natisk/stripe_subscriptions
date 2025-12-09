@@ -2,7 +2,7 @@
 
 module Stripe
   # Verify webhooks signatures
-  class VerifyWebhoodSignatureService < BaseService
+  class VerifyWebhookSignatureService < BaseService
     def initilize(request)
       @request = request
     end
