@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_01_174320) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_09_204043) do
   create_table "invoices", force: :cascade do |t|
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
@@ -27,6 +27,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_01_174320) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "subscription_id"
+  end
+
+  create_table "stripe_event_logs", force: :cascade do |t|
+    t.string "event_id", null: false
+    t.text "payload"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_stripe_event_logs_on_event_id", unique: true
   end
 
   create_table "subscriptions", force: :cascade do |t|
