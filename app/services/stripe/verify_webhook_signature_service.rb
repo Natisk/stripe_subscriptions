@@ -8,40 +8,36 @@ module Stripe
     end
 
     def call
+      return log_and_nil('No request provided to Service') unless request
+
       secret = ENV['STRIPE_WEBHOOK_SECRET']
+      return log_and_nil('Stripe webhook secret not configured') if secret.blank?
 
-      if secret.blank?
-        Rails.logger.warn('Stripe webhook secret not configured (STRIPE_WEBHOOK_SECRET).')
-        return nil
-      end
-
-      unless request
-        Rails.logger.warn('No request provided to VerifyWebhookSignatureService')
-        return nil
-      end
-
-      payload = begin
-        request.raw_post
-      rescue => e
-        Rails.logger.warn("Failed to read request body: #{e.message}")
-        return nil
-      end
-
+      payload = request.raw_post
       signature = request.env['HTTP_STRIPE_SIGNATURE']
 
-      unless signature.present?
-        Rails.logger.warn('Stripe signature header missing (HTTP_STRIPE_SIGNATURE).')
-        return nil
-      end
+      return log_and_nil('Missing Stripe-Signature header') if signature.blank?
 
       ::Stripe::Webhook.construct_event(payload, signature, secret)
-    rescue JSON::ParserError, ::Stripe::SignatureVerificationError => e
-      Rails.logger.warn("Stripe signature error: #{e.message}")
+    rescue JSON::ParserError => e
+      Rails.logger.error("Stripe webhook JSON parse error: #{e.message}")
+      nil
+    rescue ::Stripe::SignatureVerificationError => e
+      Rails.logger.warn("Stripe webhook signature verification failed: #{e.message}")
+      nil
+    rescue => e # rubocop:disable Style/RescueStandardError
+      Rails.logger.error("Unexpected error verifying Stripe webhook: #{e.class} - #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
       nil
     end
 
     private
 
     attr_reader :request
+
+    def log_and_nil(message)
+      Rails.logger.warn("Stripe VerifyWebhookSignatureService: #{message}")
+      nil
+    end
   end
 end
